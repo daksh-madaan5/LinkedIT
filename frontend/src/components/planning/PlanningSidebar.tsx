@@ -13,6 +13,7 @@ interface PlanningSidebarProps {
   selectedVehicleId?: string | null;
   onSelectVehicle?: (vehicleId: string | null) => void;
   onDepotChange: (depot: LocationRequest) => void;
+  onOpenDepotModal?: () => void;
   onAddVehicle: (vehicle: VehicleRequest) => void;
   onUpdateVehicle: (index: number, vehicle: VehicleRequest) => void;
   onRemoveVehicle: (index: number) => void;
@@ -33,6 +34,7 @@ export const PlanningSidebar: React.FC<PlanningSidebarProps> = ({
   selectedVehicleId,
   onSelectVehicle,
   onDepotChange,
+  onOpenDepotModal,
   onAddVehicle,
   onUpdateVehicle,
   onRemoveVehicle,
@@ -75,7 +77,11 @@ export const PlanningSidebar: React.FC<PlanningSidebarProps> = ({
 
       {/* Scrollable Configuration Sections */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
-        <DepotSection depot={depot} onChange={onDepotChange} />
+        <DepotSection
+          depot={depot}
+          onChange={onDepotChange}
+          onOpenLocationModal={onOpenDepotModal}
+        />
 
         <VehicleSection
           vehicles={vehicles}

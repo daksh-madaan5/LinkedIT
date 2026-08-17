@@ -118,12 +118,21 @@ export const RoutingMap: React.FC<RoutingMapProps> = ({
 
       const depotMarker = L.marker(depotLatLng, { icon: depotIcon }).addTo(layerGroup);
       depotMarker.bindPopup(`
-        <div style="padding: 4px; font-family: sans-serif;">
-          <strong style="font-size: 12px; color: #0f172a;">Depot Origin</strong><br/>
-          <span style="font-size: 11px; color: #64748b;">ID: ${depot.id}</span><br/>
-          <span style="font-size: 11px; font-family: monospace; color: #334155;">
+        <div style="padding: 6px 4px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 220px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+            <strong style="font-size: 13px; color: #0f172a; font-weight: 700;">${depot.name || 'Depot Origin'}</strong>
+          </div>
+          <div style="font-size: 10px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 4px; border: 1px solid #bfdbfe; font-family: monospace;">
+            ID: ${depot.id}
+          </div>
+          ${
+            depot.address
+              ? `<div style="font-size: 11px; color: #475569; margin-bottom: 6px; line-height: 1.3;">${depot.address}</div>`
+              : ''
+          }
+          <div style="font-size: 10px; font-family: monospace; color: #64748b; background: #f8fafc; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0;">
             ${depot.latitude.toFixed(4)}, ${depot.longitude.toFixed(4)}
-          </span>
+          </div>
         </div>
       `);
     }

@@ -16,13 +16,54 @@ export class ApiError extends Error {
 
 export async function optimizeRoutes(request: OptimizationRequest): Promise<OptimizationResponse> {
   try {
+    // Sanitize payload to match backend DTO strictly
+    const sanitizedPayload = {
+      depot: {
+        id: request.depot.id,
+        latitude: request.depot.latitude,
+        longitude: request.depot.longitude,
+      },
+      vehicles: request.vehicles.map((v) => ({
+        id: v.id,
+        capacity: v.capacity,
+        startLocation: v.startLocation
+          ? {
+              id: v.startLocation.id,
+              latitude: v.startLocation.latitude,
+              longitude: v.startLocation.longitude,
+            }
+          : undefined,
+        endLocation: v.endLocation
+          ? {
+              id: v.endLocation.id,
+              latitude: v.endLocation.latitude,
+              longitude: v.endLocation.longitude,
+            }
+          : undefined,
+      })),
+      jobs: request.jobs.map((j) => ({
+        id: j.id,
+        latitude: j.latitude,
+        longitude: j.longitude,
+        demand: j.demand,
+        serviceDuration: j.serviceDuration,
+        priority: j.priority,
+        timeWindow: j.timeWindow
+          ? {
+              start: j.timeWindow.start,
+              end: j.timeWindow.end,
+            }
+          : undefined,
+      })),
+    };
+
     const response = await fetch(`${BASE_URL}/api/optimize`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-      body: JSON.stringify(request),
+      body: JSON.stringify(sanitizedPayload),
     });
 
     if (!response.ok) {

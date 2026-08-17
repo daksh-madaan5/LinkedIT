@@ -4,6 +4,7 @@ import { AppHeader } from './components/layout/AppHeader';
 import { PlanningSidebar } from './components/planning/PlanningSidebar';
 import { RoutingMap } from './components/map/RoutingMap';
 import { ResultsTabs } from './components/results/ResultsTabs';
+import { DepotOriginModal } from './components/planning/DepotOriginModal';
 import { optimizeRoutes, ApiError } from './api/optimizationApi';
 import { BHUBANESWAR_DEMO_DEPOT, BHUBANESWAR_DEMO_VEHICLES, BHUBANESWAR_DEMO_JOBS } from './data/sampleData';
 import { AlertCircle, X } from 'lucide-react';
@@ -18,14 +19,19 @@ const DEFAULT_RESULTS_HEIGHT = 280;
 const MAX_RESULTS_HEIGHT = 480;
 
 export function App() {
-  // Input State (Starts empty per requirement)
+  // Input State (Starts with default depot; opens popup on launch to set location)
   const [depot, setDepot] = useState<LocationRequest>({
     id: 'DEPOT-1',
+    name: 'Bhubaneswar Central Depot',
+    address: 'Saheed Nagar, Bhubaneswar, Odisha, India',
     latitude: 20.2961,
     longitude: 85.8245,
   });
   const [vehicles, setVehicles] = useState<VehicleRequest[]>([]);
   const [jobs, setJobs] = useState<DeliveryRequest[]>([]);
+
+  // Depot Origin Setup Popup Modal State (Opens on initial app load)
+  const [isDepotModalOpen, setIsDepotModalOpen] = useState(true);
 
   // Optimization Execution State
   const [isLoading, setIsLoading] = useState(false);
@@ -174,6 +180,13 @@ export function App() {
     setSelectedVehicleId(null);
   };
 
+  // Depot Modal Confirm Handler
+  const handleConfirmDepot = (newDepot: LocationRequest) => {
+    setDepot(newDepot);
+    setIsDepotModalOpen(false);
+    setFitBoundsCounter((prev) => prev + 1);
+  };
+
   // Vehicle Handlers
   const handleAddVehicle = (vehicle: VehicleRequest) => {
     setVehicles((prev) => [...prev, vehicle]);
@@ -245,6 +258,8 @@ export function App() {
         onReset={handleReset}
         onResetLayout={handleResetLayout}
         hasData={hasData}
+        depot={depot}
+        onOpenDepotModal={() => setIsDepotModalOpen(true)}
       />
 
       {/* Error Alert Banner */}
@@ -276,6 +291,7 @@ export function App() {
               selectedVehicleId={selectedVehicleId}
               onSelectVehicle={setSelectedVehicleId}
               onDepotChange={setDepot}
+              onOpenDepotModal={() => setIsDepotModalOpen(true)}
               onAddVehicle={handleAddVehicle}
               onUpdateVehicle={handleUpdateVehicle}
               onRemoveVehicle={handleRemoveVehicle}
@@ -336,6 +352,15 @@ export function App() {
           />
         </main>
       </div>
+
+      {/* Depot Origin Setup Modal Popup */}
+      <DepotOriginModal
+        isOpen={isDepotModalOpen}
+        currentDepot={depot}
+        onConfirm={handleConfirmDepot}
+        onClose={() => setIsDepotModalOpen(false)}
+        isFirstLaunch={!hasData}
+      />
     </div>
   );
 }

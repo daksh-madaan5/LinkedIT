@@ -2,6 +2,8 @@ import type { LocationRequest, VehicleRequest, DeliveryRequest } from '../types/
 
 export const BHUBANESWAR_DEMO_DEPOT: LocationRequest = {
   id: 'DEPOT-1',
+  name: 'Bhubaneswar Central Depot',
+  address: 'Saheed Nagar, Bhubaneswar, Odisha, India',
   latitude: 20.2961,
   longitude: 85.8245,
 };
