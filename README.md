@@ -95,3 +95,10 @@ Example request:
 ```
 
 Routing defaults to offline great-circle distance and straight-line GeoJSON geometry. Set `routing.provider=osrm` and `routing.osrm.base-url=http://localhost:5000` to preload OSRM Table-service road distances and durations before optimization, then request actual road geometry once per final used route. See `routing-backend/README.md` for timeout, matrix-limit, and failure behavior.
+
+## Project Guide
+
+For a complete beginner-friendly explanation of the project, architecture, backend, jsprit, OSRM, API, optimization flow, deployment, troubleshooting, and interview preparation, see:
+
+[PROJECT_GUIDE](./PROJECT_GUIDE/00_START_HERE.md)
+

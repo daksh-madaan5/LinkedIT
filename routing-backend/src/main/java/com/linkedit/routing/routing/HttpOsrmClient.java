@@ -10,6 +10,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,13 +21,17 @@ public class HttpOsrmClient implements OsrmClient {
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
 
+    @Autowired
     public HttpOsrmClient(OsrmProperties properties, ObjectMapper objectMapper) {
         this(properties, objectMapper, HttpClient.newBuilder()
-            .connectTimeout(properties.getConnectTimeout())
-            .build());
+                .connectTimeout(properties.getConnectTimeout())
+                .build());
     }
 
-    HttpOsrmClient(OsrmProperties properties, ObjectMapper objectMapper, HttpClient httpClient) {
+    HttpOsrmClient(
+            OsrmProperties properties,
+            ObjectMapper objectMapper,
+            HttpClient httpClient) {
         this.properties = properties;
         this.objectMapper = objectMapper;
         this.httpClient = httpClient;
