@@ -3,7 +3,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { LocationRequest, DeliveryRequest, OptimizationResponse } from '../../types/optimization';
 import { geoJsonToLeafletCoords, getVehicleColor } from '../../utils/mapUtils';
-import { Maximize2 } from 'lucide-react';
+import { Maximize2, PanelLeft } from 'lucide-react';
 
 interface RoutingMapProps {
   depot: LocationRequest;
@@ -12,6 +12,8 @@ interface RoutingMapProps {
   selectedVehicleId: string | null;
   onSelectVehicle: (vehicleId: string | null) => void;
   shouldFitBoundsTrigger: number;
+  isSidebarOpen?: boolean;
+  onOpenSidebar?: () => void;
   isResizing?: boolean;
 }
 
@@ -22,6 +24,8 @@ export const RoutingMap: React.FC<RoutingMapProps> = ({
   selectedVehicleId,
   onSelectVehicle,
   shouldFitBoundsTrigger,
+  isSidebarOpen = true,
+  onOpenSidebar,
   isResizing = false,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -55,7 +59,7 @@ export const RoutingMap: React.FC<RoutingMapProps> = ({
     layerGroupRef.current = layerGroup;
     mapInstanceRef.current = map;
 
-    // Resize observer for automatic map invalidation
+    // Resize observer for automatic map invalidation on layout changes
     let rafId: number | null = null;
     const resizeObserver = new ResizeObserver(() => {
       if (rafId) cancelAnimationFrame(rafId);
@@ -75,6 +79,17 @@ export const RoutingMap: React.FC<RoutingMapProps> = ({
       mapInstanceRef.current = null;
     };
   }, []);
+
+  // Ensure Leaflet recalculates dimensions immediately on sidebar open/close
+  useEffect(() => {
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.invalidateSize({ animate: false });
+      const timer = setTimeout(() => {
+        mapInstanceRef.current?.invalidateSize({ animate: false });
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isSidebarOpen]);
 
   // Render Map Markers and Polylines
   useEffect(() => {
@@ -265,16 +280,30 @@ export const RoutingMap: React.FC<RoutingMapProps> = ({
     <div className="relative w-full h-full bg-slate-100 overflow-hidden">
       <div ref={mapContainerRef} className="w-full h-full z-0" />
 
-      {/* Floating Fit Bounds Button matching screenshot */}
-      <button
-        type="button"
-        onClick={handleFitClick}
-        className="absolute top-3.5 left-3.5 z-[1000] bg-white border border-slate-200 text-slate-800 hover:text-slate-900 hover:bg-slate-50 px-2.5 py-1.5 rounded-md shadow-xs text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer h-8.5"
-        title="Fit map to encompass all route locations"
-      >
-        <Maximize2 className="h-3.5 w-3.5 text-slate-600 shrink-0" />
-        <span>Fit Bounds</span>
-      </button>
+      {/* Floating Top-Left Controls (Planning Inputs Toggle + Fit Bounds) */}
+      <div className="absolute top-3.5 left-3.5 z-[1000] flex items-center gap-2">
+        {!isSidebarOpen && onOpenSidebar && (
+          <button
+            type="button"
+            onClick={onOpenSidebar}
+            className="bg-white border border-slate-200 text-slate-800 hover:text-slate-900 hover:bg-slate-50 px-2.5 py-1.5 rounded-md shadow-xs text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer h-8.5"
+            title="Open Planning Inputs sidebar"
+          >
+            <PanelLeft className="h-3.5 w-3.5 text-blue-600 shrink-0" />
+            <span>Planning Inputs</span>
+          </button>
+        )}
+
+        <button
+          type="button"
+          onClick={handleFitClick}
+          className="bg-white border border-slate-200 text-slate-800 hover:text-slate-900 hover:bg-slate-50 px-2.5 py-1.5 rounded-md shadow-xs text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer h-8.5"
+          title="Fit map to encompass all route locations"
+        >
+          <Maximize2 className="h-3.5 w-3.5 text-slate-600 shrink-0" />
+          <span>Fit Bounds</span>
+        </button>
+      </div>
 
       {/* Resize Drag Transparent Overlay */}
       {isResizing && <div className="absolute inset-0 z-[1500] bg-transparent pointer-events-auto" />}

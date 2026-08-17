@@ -8,7 +8,7 @@ import { optimizeRoutes, ApiError } from './api/optimizationApi';
 import { BHUBANESWAR_DEMO_DEPOT, BHUBANESWAR_DEMO_VEHICLES, BHUBANESWAR_DEMO_JOBS } from './data/sampleData';
 import { AlertCircle, X } from 'lucide-react';
 
-// Refined Layout Constants matching screenshot
+// Refined Layout Constants
 const MIN_SIDEBAR_WIDTH = 280;
 const DEFAULT_SIDEBAR_WIDTH = 320;
 const MAX_SIDEBAR_WIDTH = 450;
@@ -33,6 +33,9 @@ export function App() {
   const [response, setResponse] = useState<OptimizationResponse | null>(null);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [fitBoundsCounter, setFitBoundsCounter] = useState(0);
+
+  // Sidebar Open/Collapsed State
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Resizable Split-Pane Dimensions (Persisted in localStorage)
   const [sidebarWidth, setSidebarWidth] = useState<number>(() => {
@@ -136,8 +139,9 @@ export function App() {
     document.body.style.userSelect = 'none';
   };
 
-  // Reset Layout handler (Restores default 320px sidebar & 280px results)
+  // Reset Layout handler (Restores default sidebar, open state & results height)
   const handleResetLayout = () => {
+    setIsSidebarOpen(true);
     setSidebarWidth(DEFAULT_SIDEBAR_WIDTH);
     setResultsHeight(DEFAULT_RESULTS_HEIGHT);
     try {
@@ -183,9 +187,19 @@ export function App() {
     setVehicles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Job Handlers
+  // Single Job Handlers
   const handleAddJob = (job: DeliveryRequest) => {
     setJobs((prev) => [...prev, job]);
+    setFitBoundsCounter((prev) => prev + 1);
+  };
+
+  // Bulk CSV Jobs Import Handler
+  const handleAddJobs = (newJobs: DeliveryRequest[]) => {
+    setJobs((prev) => [...prev, ...newJobs]);
+    // Clear existing optimization response to avoid stale results with newly added jobs
+    setResponse(null);
+    setSelectedVehicleId(null);
+    // Fit bounds once across all jobs
     setFitBoundsCounter((prev) => prev + 1);
   };
 
@@ -251,33 +265,39 @@ export function App() {
 
       {/* Workspace Body: Left Sidebar + Vertical Divider + Right Main Area */}
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Left Resizable Planning Sidebar */}
-        <PlanningSidebar
-          width={sidebarWidth}
-          depot={depot}
-          vehicles={vehicles}
-          jobs={jobs}
-          selectedVehicleId={selectedVehicleId}
-          onSelectVehicle={setSelectedVehicleId}
-          onDepotChange={setDepot}
-          onAddVehicle={handleAddVehicle}
-          onUpdateVehicle={handleUpdateVehicle}
-          onRemoveVehicle={handleRemoveVehicle}
-          onAddJob={handleAddJob}
-          onUpdateJob={handleUpdateJob}
-          onRemoveJob={handleRemoveJob}
-          onOptimize={handleOptimize}
-          isLoading={isLoading}
-        />
+        {/* Left Resizable Planning Sidebar (Conditionally Rendered) */}
+        {isSidebarOpen && (
+          <>
+            <PlanningSidebar
+              width={sidebarWidth}
+              depot={depot}
+              vehicles={vehicles}
+              jobs={jobs}
+              selectedVehicleId={selectedVehicleId}
+              onSelectVehicle={setSelectedVehicleId}
+              onDepotChange={setDepot}
+              onAddVehicle={handleAddVehicle}
+              onUpdateVehicle={handleUpdateVehicle}
+              onRemoveVehicle={handleRemoveVehicle}
+              onAddJob={handleAddJob}
+              onAddJobs={handleAddJobs}
+              onUpdateJob={handleUpdateJob}
+              onRemoveJob={handleRemoveJob}
+              onOptimize={handleOptimize}
+              onClose={() => setIsSidebarOpen(false)}
+              isLoading={isLoading}
+            />
 
-        {/* Vertical Resize Handle (Sidebar Divider) with grip indicator */}
-        <div
-          onPointerDown={handleSidebarResizeStart}
-          className={`resize-handle-x ${isDraggingSidebar ? 'is-dragging' : ''}`}
-          title="Drag horizontally to resize planning sidebar"
-        >
-          <div className="resize-grip-dots-x">⋮</div>
-        </div>
+            {/* Vertical Resize Handle (Sidebar Divider) with grip indicator */}
+            <div
+              onPointerDown={handleSidebarResizeStart}
+              className={`resize-handle-x ${isDraggingSidebar ? 'is-dragging' : ''}`}
+              title="Drag horizontally to resize planning sidebar"
+            >
+              <div className="resize-grip-dots-x">⋮</div>
+            </div>
+          </>
+        )}
 
         {/* Right Workspace: Map (Upper) + Horizontal Divider + Results Workspace (Lower) */}
         <main className="flex-1 flex flex-col overflow-hidden relative min-w-0">
@@ -290,6 +310,8 @@ export function App() {
               selectedVehicleId={selectedVehicleId}
               onSelectVehicle={setSelectedVehicleId}
               shouldFitBoundsTrigger={fitBoundsCounter}
+              isSidebarOpen={isSidebarOpen}
+              onOpenSidebar={() => setIsSidebarOpen(true)}
               isResizing={isDraggingSidebar || isDraggingResults}
             />
           </div>

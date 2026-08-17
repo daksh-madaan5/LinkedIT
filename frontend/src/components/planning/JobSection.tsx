@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import type { DeliveryRequest } from '../../types/optimization';
-import { Package, Plus, Trash2, Edit2, X } from 'lucide-react';
+import { Package, Plus, Trash2, Edit2, X, Upload, Download } from 'lucide-react';
 import { formatCoordinates } from '../../utils/formatting';
+import { parseAndValidateJobsCsv, downloadCsvTemplate, type CsvParseResult } from '../../utils/csvParser';
+import { CsvImportModal } from './CsvImportModal';
 
 interface JobSectionProps {
   jobs: DeliveryRequest[];
   onAddJob: (job: DeliveryRequest) => void;
+  onAddJobs?: (jobs: DeliveryRequest[]) => void;
   onUpdateJob: (index: number, job: DeliveryRequest) => void;
   onRemoveJob: (index: number) => void;
 }
@@ -13,11 +16,18 @@ interface JobSectionProps {
 export const JobSection: React.FC<JobSectionProps> = ({
   jobs,
   onAddJob,
+  onAddJobs,
   onUpdateJob,
   onRemoveJob,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+  // CSV Import State
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
+  const [csvParseResult, setCsvParseResult] = useState<CsvParseResult | null>(null);
+  const [csvFileName, setCsvFileName] = useState('');
 
   // Form states
   const [formId, setFormId] = useState('');
@@ -70,27 +80,98 @@ export const JobSection: React.FC<JobSectionProps> = ({
     setIsModalOpen(false);
   };
 
+  const handleTriggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setCsvFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      const result = parseAndValidateJobsCsv(text || '', jobs);
+      setCsvParseResult(result);
+      setIsCsvModalOpen(true);
+    };
+    reader.readAsText(file);
+
+    // Reset value so user can select the same file again if needed
+    e.target.value = '';
+  };
+
+  const handleConfirmCsvImport = (validJobs: DeliveryRequest[]) => {
+    if (onAddJobs) {
+      onAddJobs(validJobs);
+    } else {
+      validJobs.forEach((job) => onAddJob(job));
+    }
+    setIsCsvModalOpen(false);
+    setCsvParseResult(null);
+  };
+
   return (
     <div className="p-3 bg-white rounded-lg border border-slate-200 shadow-xs space-y-2.5">
+      {/* Hidden File Input for CSV Upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv,text/csv"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
+      {/* Header with Title and Actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-slate-900 font-bold text-xs uppercase tracking-wider">
           <Package className="h-3.5 w-3.5 text-blue-600 shrink-0" />
           <span>Delivery Jobs</span>
           <span className="text-[11px] font-normal text-slate-500 font-mono">({jobs.length})</span>
         </div>
+
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={openAddModal}
+            className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-2 py-0.5 rounded transition-colors cursor-pointer"
+            title="Add individual delivery job"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Add delivery</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleTriggerFileInput}
+            className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 px-2 py-0.5 rounded border border-slate-200 transition-colors cursor-pointer"
+            title="Import jobs from CSV file"
+          >
+            <Upload className="h-3 w-3 text-slate-500" />
+            <span>Import CSV</span>
+          </button>
+        </div>
+      </div>
+
+      {/* CSV Template Download Bar */}
+      <div className="flex items-center justify-between text-[11px] pt-0.5 border-t border-slate-100 text-slate-500">
+        <span>Bulk import delivery locations</span>
         <button
           type="button"
-          onClick={openAddModal}
-          className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-2 py-0.5 rounded transition-colors cursor-pointer"
+          onClick={downloadCsvTemplate}
+          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline font-medium cursor-pointer"
+          title="Download sample CSV template format"
         >
-          <Plus className="h-3.5 w-3.5" />
-          <span>Add delivery</span>
+          <Download className="h-2.5 w-2.5" />
+          <span>Download CSV Template</span>
         </button>
       </div>
 
+      {/* Delivery Jobs List */}
       {jobs.length === 0 ? (
         <p className="text-xs text-slate-400 italic py-2 text-center border border-dashed border-slate-200 rounded">
-          No delivery jobs added yet
+          No delivery jobs added yet. Add manually or import CSV.
         </p>
       ) : (
         <div className="space-y-1.5 max-h-60 overflow-y-auto pr-0.5">
@@ -253,6 +334,19 @@ export const JobSection: React.FC<JobSectionProps> = ({
             </form>
           </div>
         </div>
+      )}
+
+      {/* CSV Import Preview Modal */}
+      {isCsvModalOpen && (
+        <CsvImportModal
+          parseResult={csvParseResult}
+          fileName={csvFileName}
+          onConfirm={handleConfirmCsvImport}
+          onCancel={() => {
+            setIsCsvModalOpen(false);
+            setCsvParseResult(null);
+          }}
+        />
       )}
     </div>
   );

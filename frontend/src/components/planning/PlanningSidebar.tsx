@@ -17,9 +17,11 @@ interface PlanningSidebarProps {
   onUpdateVehicle: (index: number, vehicle: VehicleRequest) => void;
   onRemoveVehicle: (index: number) => void;
   onAddJob: (job: DeliveryRequest) => void;
+  onAddJobs?: (jobs: DeliveryRequest[]) => void;
   onUpdateJob: (index: number, job: DeliveryRequest) => void;
   onRemoveJob: (index: number) => void;
   onOptimize: () => void;
+  onClose?: () => void;
   isLoading: boolean;
 }
 
@@ -35,9 +37,11 @@ export const PlanningSidebar: React.FC<PlanningSidebarProps> = ({
   onUpdateVehicle,
   onRemoveVehicle,
   onAddJob,
+  onAddJobs,
   onUpdateJob,
   onRemoveJob,
   onOptimize,
+  onClose,
   isLoading,
 }) => {
   const isFormValid =
@@ -56,13 +60,17 @@ export const PlanningSidebar: React.FC<PlanningSidebarProps> = ({
         <h2 className="font-bold text-slate-900 text-xs tracking-wider uppercase">
           Planning Inputs
         </h2>
-        <button
-          type="button"
-          className="text-slate-400 hover:text-slate-600 p-0.5 rounded hover:bg-slate-100 transition-colors"
-          title="Planning Inputs"
-        >
-          <X className="h-3.5 w-3.5" />
-        </button>
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-slate-400 hover:text-slate-700 p-1 rounded hover:bg-slate-100 transition-colors cursor-pointer"
+            title="Collapse Planning Inputs sidebar"
+            aria-label="Collapse Planning Inputs sidebar"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       {/* Scrollable Configuration Sections */}
@@ -81,6 +89,7 @@ export const PlanningSidebar: React.FC<PlanningSidebarProps> = ({
         <JobSection
           jobs={jobs}
           onAddJob={onAddJob}
+          onAddJobs={onAddJobs}
           onUpdateJob={onUpdateJob}
           onRemoveJob={onRemoveJob}
         />
