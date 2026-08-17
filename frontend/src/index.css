@@ -1,0 +1,204 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: #0f172a;
+  background-color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar for smooth look */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Custom Leaflet Marker Styles */
+.custom-depot-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.depot-pin {
+  width: 36px;
+  height: 36px;
+  background-color: #0f172a;
+  border: 2px solid #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px -1px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.depot-badge {
+  font-size: 9px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  font-family: var(--font-mono);
+}
+
+.custom-job-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.job-pin {
+  width: 24px;
+  height: 24px;
+  background-color: #0f172a;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.job-id {
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: var(--font-mono);
+}
+
+.custom-stop-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stop-badge {
+  width: 28px;
+  height: 28px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  font-family: var(--font-mono);
+}
+
+/* Draggable Split-Pane Resize Handles */
+.resize-handle-x {
+  width: 6px;
+  cursor: col-resize;
+  background-color: #e2e8f0;
+  transition: background-color 0.15s ease;
+  z-index: 30;
+  user-select: none;
+  touch-action: none;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.resize-handle-x:hover,
+.resize-handle-x.is-dragging {
+  background-color: #3b82f6;
+}
+
+.resize-grip-dots-x {
+  width: 14px;
+  height: 24px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #64748b;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+}
+
+.resize-handle-y {
+  height: 6px;
+  cursor: row-resize;
+  background-color: #e2e8f0;
+  transition: background-color 0.15s ease;
+  z-index: 30;
+  user-select: none;
+  touch-action: none;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.resize-handle-y:hover,
+.resize-handle-y.is-dragging {
+  background-color: #3b82f6;
+}
+
+.resize-grip-dots-y {
+  height: 14px;
+  width: 24px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #64748b;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+}
+
+/* Animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
