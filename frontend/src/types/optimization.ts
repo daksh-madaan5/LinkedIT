@@ -79,3 +79,12 @@ export interface ApiErrorResponse {
   code: 'INVALID_REQUEST' | 'INVALID_JSON' | 'ROUTING_PROVIDER_FAILED' | 'OPTIMIZATION_FAILED';
   errors: string[];
 }
+
+export type OrderStatusFilter = 'all' | 'pending' | 'assigned' | 'unassigned';
+
+export interface OrderFilterCriteria {
+  status: OrderStatusFilter;
+  vehicleId: string; // 'all' or specific vehicle id
+  priority: string;  // 'all' or specific priority like '1', '2'
+}
+

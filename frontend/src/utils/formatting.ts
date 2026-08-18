@@ -17,13 +17,20 @@ export function formatDuration(seconds: number): string {
   return `${minutes} min`;
 }
 
-export function formatTimeOfDay(secondsFromMidnight: number): string {
-  if (secondsFromMidnight == null || isNaN(secondsFromMidnight)) return '--:--';
+export function formatTime12Hour(secondsFromMidnight?: number | null): string {
+  if (secondsFromMidnight == null || isNaN(secondsFromMidnight) || secondsFromMidnight < 0) {
+    return '-';
+  }
   const totalMinutes = Math.floor(secondsFromMidnight / 60);
-  const hours = Math.floor(totalMinutes / 60) % 24;
+  const totalHours = Math.floor(totalMinutes / 60) % 24;
   const mins = totalMinutes % 60;
-  const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
-  return `${pad(hours)}:${pad(mins)}`;
+
+  const period = totalHours >= 12 ? 'PM' : 'AM';
+  let hour12 = totalHours % 12;
+  if (hour12 === 0) hour12 = 12;
+
+  const paddedMins = mins < 10 ? `0${mins}` : `${mins}`;
+  return `${hour12}:${paddedMins} ${period}`;
 }
 
 export function formatCoordinates(lat: number, lng: number): string {
@@ -42,7 +49,8 @@ export function formatServiceTime(seconds: number): string {
 
 export function formatTimeWindow(start?: number | null, end?: number | null): string {
   if (start == null && end == null) return '-';
-  const startStr = start != null ? formatTimeOfDay(start) : '00:00';
-  const endStr = end != null ? formatTimeOfDay(end) : '23:59';
+  const startStr = start != null ? formatTime12Hour(start) : '12:00 AM';
+  const endStr = end != null ? formatTime12Hour(end) : '11:59 PM';
   return `${startStr} – ${endStr}`;
 }
+

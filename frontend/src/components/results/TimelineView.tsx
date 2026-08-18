@@ -1,6 +1,6 @@
 import React from 'react';
 import type { OptimizationResponse } from '../../types/optimization';
-import { formatTimeOfDay, formatDuration } from '../../utils/formatting';
+import { formatTime12Hour, formatDuration } from '../../utils/formatting';
 import { getVehicleColor } from '../../utils/mapUtils';
 
 interface TimelineViewProps {
@@ -52,7 +52,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 </span>
               </div>
               <span className="text-[11px] font-mono text-slate-600 font-semibold">
-                Start: {formatTimeOfDay(route.stops[0]?.arrivalTime ? route.stops[0].arrivalTime - 300 : 28800)}
+                Start: {formatTime12Hour(route.stops[0]?.arrivalTime ? route.stops[0].arrivalTime - 300 : 28800)}
               </span>
             </div>
 
@@ -73,7 +73,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                       {stop.jobId}
                     </span>
                     <span className="text-[10px] text-slate-500">
-                      {formatTimeOfDay(stop.arrivalTime)}
+                      {formatTime12Hour(stop.arrivalTime)}
                     </span>
                   </div>
                   {sIdx < route.stops.length - 1 && (
@@ -81,6 +81,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                   )}
                 </React.Fragment>
               ))}
+
 
               <span className="text-slate-400">→</span>
               <div className="px-2 py-1 bg-slate-900 text-white rounded text-[10px] font-bold shrink-0">

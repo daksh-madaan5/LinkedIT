@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import type { DeliveryRequest, OptimizationResponse, VehicleRequest } from '../../types/optimization';
+import React, { useState, useMemo } from 'react';
+import type { DeliveryRequest, OptimizationResponse, VehicleRequest, OrderFilterCriteria } from '../../types/optimization';
 import { OrdersTable } from './OrdersTable';
 import { RoutesTable } from './RoutesTable';
 import { TimelineView } from './TimelineView';
+import { OrderFilterPopover } from './OrderFilterPopover';
 import { LayoutList, Route, Clock, Search, Filter } from 'lucide-react';
 
 interface ResultsTabsProps {
@@ -14,6 +15,12 @@ interface ResultsTabsProps {
   onSelectVehicle: (vehicleId: string | null) => void;
 }
 
+const DEFAULT_FILTERS: OrderFilterCriteria = {
+  status: 'all',
+  vehicleId: 'all',
+  priority: 'all',
+};
+
 export const ResultsTabs: React.FC<ResultsTabsProps> = ({
   height,
   jobs,
@@ -24,8 +31,47 @@ export const ResultsTabs: React.FC<ResultsTabsProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'orders' | 'routes' | 'timeline'>('orders');
   const [searchTerm, setSearchTerm] = useState('');
+  const [orderFilters, setOrderFilters] = useState<OrderFilterCriteria>(DEFAULT_FILTERS);
+  const [isFilterPopoverOpen, setIsFilterPopoverOpen] = useState(false);
 
   const routesCount = response?.routes?.length || 0;
+
+  const isFilterActive = useMemo(() => {
+    return (
+      orderFilters.status !== 'all' ||
+      orderFilters.vehicleId !== 'all' ||
+      orderFilters.priority !== 'all'
+    );
+  }, [orderFilters]);
+
+  // Dynamically extract available vehicle IDs
+  const availableVehicles = useMemo(() => {
+    const ids = new Set<string>();
+    vehicles.forEach((v) => {
+      if (v.id) ids.add(v.id);
+    });
+    if (response && response.routes) {
+      response.routes.forEach((r) => {
+        if (r.vehicleId) ids.add(r.vehicleId);
+      });
+    }
+    return Array.from(ids).sort();
+  }, [vehicles, response]);
+
+  // Dynamically extract available priority numbers
+  const availablePriorities = useMemo(() => {
+    const priorities = new Set<number>();
+    jobs.forEach((j) => {
+      if (j.priority != null && !isNaN(j.priority)) {
+        priorities.add(j.priority);
+      }
+    });
+    return Array.from(priorities).sort((a, b) => a - b);
+  }, [jobs]);
+
+  const handleResetFilters = () => {
+    setOrderFilters(DEFAULT_FILTERS);
+  };
 
   return (
     <div
@@ -102,13 +148,40 @@ export const ResultsTabs: React.FC<ResultsTabsProps> = ({
           )}
 
           <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              className="p-1.5 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100 transition-colors"
-              title="Filter"
-            >
-              <Filter className="h-3.5 w-3.5" />
-            </button>
+            {/* Filter Button & Popover */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsFilterPopoverOpen((prev) => !prev)}
+                className={`p-1.5 rounded transition-all cursor-pointer relative ${
+                  isFilterActive
+                    ? 'text-blue-600 bg-blue-50 border border-blue-200 shadow-xs'
+                    : isFilterPopoverOpen
+                    ? 'text-slate-800 bg-slate-100'
+                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                }`}
+                title="Filter orders"
+                aria-label="Filter orders"
+              >
+                <Filter className="h-3.5 w-3.5" />
+                {isFilterActive && (
+                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-600 rounded-full ring-2 ring-white" />
+                )}
+              </button>
+
+              <OrderFilterPopover
+                isOpen={isFilterPopoverOpen}
+                onClose={() => setIsFilterPopoverOpen(false)}
+                filters={orderFilters}
+                onChangeFilters={setOrderFilters}
+                onResetFilters={handleResetFilters}
+                availableVehicles={availableVehicles}
+                availablePriorities={availablePriorities}
+                isFilterActive={isFilterActive}
+              />
+            </div>
+
+            {/* Search Input */}
             <div className="relative">
               <input
                 type="text"
@@ -132,6 +205,7 @@ export const ResultsTabs: React.FC<ResultsTabsProps> = ({
             selectedVehicleId={selectedVehicleId}
             onSelectVehicle={onSelectVehicle}
             searchTerm={searchTerm}
+            filters={orderFilters}
           />
         )}
 
@@ -155,3 +229,4 @@ export const ResultsTabs: React.FC<ResultsTabsProps> = ({
     </div>
   );
 };
+
