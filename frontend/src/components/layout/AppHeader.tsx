@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Sparkles, RotateCcw, LayoutTemplate } from 'lucide-react';
+import { Sparkles, RotateCcw, LayoutTemplate } from 'lucide-react';
 
 interface AppHeaderProps {
   onLoadDemo: () => void;
@@ -22,9 +22,11 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
     <header className="h-16 bg-white border-b border-slate-200 px-5 flex items-center justify-between z-20 shrink-0 select-none shadow-xs">
       {/* Left: Branding */}
       <div className="flex items-center gap-3 shrink-0">
-        <div className="h-9 w-9 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs shrink-0">
-          <Route className="h-5 w-5" />
-        </div>
+        <img
+          src="/linkedIt-logo.png"
+          alt="LinkedIT Logo"
+          className="h-9 w-9 object-contain shrink-0"
+        />
         <div>
           <h1 className="font-bold text-slate-900 text-sm tracking-tight leading-none font-sans">
             LinkedIT
