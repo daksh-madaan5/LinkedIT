@@ -1,6 +1,5 @@
 import React from 'react';
-import type { LocationRequest } from '../../types/optimization';
-import { Route, Sparkles, RotateCcw, LayoutTemplate, Warehouse } from 'lucide-react';
+import { Route, Sparkles, RotateCcw, LayoutTemplate } from 'lucide-react';
 
 interface AppHeaderProps {
   onLoadDemo: () => void;
@@ -9,8 +8,6 @@ interface AppHeaderProps {
   hasData: boolean;
   activeNavTab?: string;
   onNavTabChange?: (tab: string) => void;
-  depot?: LocationRequest;
-  onOpenDepotModal?: () => void;
 }
 
 export const AppHeader: React.FC<AppHeaderProps> = ({
@@ -20,55 +17,22 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   hasData,
   activeNavTab = 'plan',
   onNavTabChange,
-  depot,
-  onOpenDepotModal,
 }) => {
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-5 flex items-center justify-between z-20 shrink-0 select-none shadow-xs">
-      {/* Left: Branding & Active Depot Badge */}
-      <div className="flex items-center gap-4 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs shrink-0">
-            <Route className="h-5 w-5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <h1 className="font-bold text-slate-900 text-sm tracking-tight leading-none font-sans">
-                LinkedIT
-              </h1>
-              <span className="text-[9px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-1 py-0.5 rounded border border-slate-200 leading-none">
-                PRO
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1 leading-none">
-              Vehicle Routing Optimization
-            </p>
-          </div>
+      {/* Left: Branding */}
+      <div className="flex items-center gap-3 shrink-0">
+        <div className="h-9 w-9 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs shrink-0">
+          <Route className="h-5 w-5" />
         </div>
-
-        {/* Quick Depot Origin Indicator in Header */}
-        {depot && onOpenDepotModal && (
-          <button
-            type="button"
-            onClick={onOpenDepotModal}
-            className="hidden lg:flex items-center gap-2 px-2.5 py-1 bg-slate-50 hover:bg-blue-50/80 border border-slate-200 hover:border-blue-200 rounded-lg text-slate-700 hover:text-blue-700 transition-all cursor-pointer shadow-2xs group"
-            title="Click to change depot origin location"
-          >
-            <div className="h-5 w-5 rounded bg-white text-blue-600 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center border border-slate-200 transition-colors">
-              <Warehouse className="h-3 w-3" />
-            </div>
-            <div className="text-left text-xs">
-              <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-slate-800 group-hover:text-blue-900 max-w-[150px] truncate text-[11px] leading-tight">
-                  {depot.name || 'Depot Origin'}
-                </span>
-                <span className="text-[9px] font-mono font-bold text-slate-500 bg-slate-200/70 px-1 py-0.2 rounded leading-none">
-                  {depot.id || 'DEPOT-1'}
-                </span>
-              </div>
-            </div>
-          </button>
-        )}
+        <div>
+          <h1 className="font-bold text-slate-900 text-sm tracking-tight leading-none font-sans">
+            LinkedIT
+          </h1>
+          <p className="text-[11px] text-slate-500 mt-1 leading-none">
+            Vehicle Routing Optimization
+          </p>
+        </div>
       </div>
 
       {/* Center: Navigation Tabs with Generous Spacing */}

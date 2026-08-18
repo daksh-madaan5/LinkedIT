@@ -258,8 +258,6 @@ export function App() {
         onReset={handleReset}
         onResetLayout={handleResetLayout}
         hasData={hasData}
-        depot={depot}
-        onOpenDepotModal={() => setIsDepotModalOpen(true)}
       />
 
       {/* Error Alert Banner */}
