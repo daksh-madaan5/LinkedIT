@@ -2,6 +2,14 @@ import type { OptimizationRequest, OptimizationResponse, ApiErrorResponse } from
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
+export async function pingBackend(): Promise<void> {
+  try {
+    await fetch(`${BASE_URL}/api/health`, { method: 'GET' });
+  } catch {
+    // Non-blocking background warmup
+  }
+}
+
 export class ApiError extends Error {
   code: string;
   errors: string[];

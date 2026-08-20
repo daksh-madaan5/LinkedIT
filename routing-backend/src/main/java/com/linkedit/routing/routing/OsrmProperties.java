@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 public class OsrmProperties {
 
     private String baseUrl = "http://localhost:5000";
-    private Duration connectTimeout = Duration.ofSeconds(2);
-    private Duration requestTimeout = Duration.ofSeconds(10);
+    private Duration connectTimeout = Duration.ofSeconds(6);
+    private Duration requestTimeout = Duration.ofSeconds(20);
     private int maxLocations = 100;
 
     public String getBaseUrl() {

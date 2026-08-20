@@ -5,7 +5,7 @@ import { PlanningSidebar } from './components/planning/PlanningSidebar';
 import { RoutingMap } from './components/map/RoutingMap';
 import { ResultsTabs } from './components/results/ResultsTabs';
 import { DepotOriginModal } from './components/planning/DepotOriginModal';
-import { optimizeRoutes, ApiError } from './api/optimizationApi';
+import { optimizeRoutes, pingBackend, ApiError } from './api/optimizationApi';
 import { BHUBANESWAR_DEMO_DEPOT, BHUBANESWAR_DEMO_VEHICLES, BHUBANESWAR_DEMO_JOBS } from './data/sampleData';
 import { AlertCircle, X } from 'lucide-react';
 
@@ -76,6 +76,11 @@ export function App() {
 
   const [isDraggingSidebar, setIsDraggingSidebar] = useState(false);
   const [isDraggingResults, setIsDraggingResults] = useState(false);
+
+  // Background server warmup on initial mount (wakes up free tier instance instantly)
+  useEffect(() => {
+    pingBackend();
+  }, []);
 
   // Persist sidebar and results dimensions
   useEffect(() => {

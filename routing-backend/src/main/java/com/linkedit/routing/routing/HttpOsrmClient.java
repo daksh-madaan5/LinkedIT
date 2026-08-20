@@ -53,18 +53,8 @@ public class HttpOsrmClient implements OsrmClient {
             .header("Accept", "application/json")
             .GET()
             .build();
-        try {
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                throw new RoutingProviderException("OSRM table request failed with HTTP " + response.statusCode());
-            }
-            return toMatrix(response.body(), locations, size);
-        } catch (InterruptedException exception) {
-            Thread.currentThread().interrupt();
-            throw new RoutingProviderException("OSRM table request was interrupted", exception);
-        } catch (IOException exception) {
-            throw new RoutingProviderException("OSRM table request failed: " + safeMessage(exception), exception);
-        }
+        HttpResponse<String> response = sendWithRetry(request, "table");
+        return toMatrix(response.body(), locations, size);
     }
 
     @Override
@@ -77,18 +67,48 @@ public class HttpOsrmClient implements OsrmClient {
             .header("Accept", "application/json")
             .GET()
             .build();
-        try {
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                throw new RoutingProviderException("OSRM route request failed with HTTP " + response.statusCode());
+        HttpResponse<String> response = sendWithRetry(request, "route");
+        return toGeometry(response.body());
+    }
+
+    private HttpResponse<String> sendWithRetry(HttpRequest request, String operationName) {
+        int maxAttempts = 2;
+        Exception lastException = null;
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                    return response;
+                }
+                if (response.statusCode() == 429 || response.statusCode() >= 500) {
+                    if (attempt < maxAttempts) {
+                        try {
+                            Thread.sleep(600);
+                        } catch (InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                            throw new RoutingProviderException("OSRM request was interrupted during retry", ie);
+                        }
+                        continue;
+                    }
+                }
+                throw new RoutingProviderException("OSRM " + operationName + " request failed with HTTP " + response.statusCode());
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                throw new RoutingProviderException("OSRM " + operationName + " request was interrupted", exception);
+            } catch (IOException exception) {
+                lastException = exception;
+                if (attempt < maxAttempts) {
+                    try {
+                        Thread.sleep(600);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        throw new RoutingProviderException("OSRM request was interrupted during retry", ie);
+                    }
+                    continue;
+                }
             }
-            return toGeometry(response.body());
-        } catch (InterruptedException exception) {
-            Thread.currentThread().interrupt();
-            throw new RoutingProviderException("OSRM route request was interrupted", exception);
-        } catch (IOException exception) {
-            throw new RoutingProviderException("OSRM route request failed: " + safeMessage(exception), exception);
         }
+        throw new RoutingProviderException("OSRM " + operationName + " request failed: " + safeMessage(lastException), lastException);
     }
 
     URI buildTableUri(List<RoutingLocation> locations) {
