@@ -216,7 +216,8 @@ public class HttpOsrmClient implements OsrmClient {
         }
     }
 
-    private String safeMessage(IOException exception) {
+    private String safeMessage(Exception exception) {
+        if (exception == null) return "unknown network error";
         return exception.getMessage() == null ? exception.getClass().getSimpleName() : exception.getMessage();
     }
 
