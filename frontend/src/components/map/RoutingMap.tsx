@@ -290,15 +290,15 @@ export const RoutingMap: React.FC<RoutingMapProps> = ({
       <div ref={mapContainerRef} className="w-full h-full z-0" />
 
       {/* Floating Top-Left Controls (Planning Inputs Toggle + Fit Bounds) */}
-      <div className="absolute top-3.5 left-3.5 z-[1000] flex items-center gap-2">
+      <div className="absolute top-3 left-3 z-[1000] flex items-center gap-1.5">
         {!isSidebarOpen && onOpenSidebar && (
           <button
             type="button"
             onClick={onOpenSidebar}
-            className="bg-white border border-slate-200 text-slate-800 hover:text-slate-900 hover:bg-slate-50 px-2.5 py-1.5 rounded-md shadow-xs text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer h-8.5"
+            className="bg-white/95 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 px-2 py-1 rounded shadow-xs text-[11px] font-medium flex items-center gap-1.5 transition-colors cursor-pointer h-7"
             title="Open Planning Inputs sidebar"
           >
-            <PanelLeft className="h-3.5 w-3.5 text-blue-600 shrink-0" />
+            <PanelLeft className="h-3 w-3 text-blue-600 shrink-0" />
             <span>Planning Inputs</span>
           </button>
         )}
@@ -306,10 +306,10 @@ export const RoutingMap: React.FC<RoutingMapProps> = ({
         <button
           type="button"
           onClick={handleFitClick}
-          className="bg-white border border-slate-200 text-slate-800 hover:text-slate-900 hover:bg-slate-50 px-2.5 py-1.5 rounded-md shadow-xs text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer h-8.5"
+          className="bg-white/95 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 px-2 py-1 rounded shadow-xs text-[11px] font-medium flex items-center gap-1.5 transition-colors cursor-pointer h-7"
           title="Fit map to encompass all route locations"
         >
-          <Maximize2 className="h-3.5 w-3.5 text-slate-600 shrink-0" />
+          <Maximize2 className="h-3 w-3 text-slate-600 shrink-0" />
           <span>Fit Bounds</span>
         </button>
       </div>

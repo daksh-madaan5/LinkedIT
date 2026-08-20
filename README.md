@@ -66,6 +66,31 @@ The API is then available at:
 POST http://localhost:8080/api/optimize
 ```
 
+## Frontend (React + Vite + TypeScript)
+
+The React planning dashboard is located in `frontend/`:
+
+```text
+cd frontend
+npm install
+npm run dev
+```
+
+The web dashboard is then available at `http://localhost:5173`.
+
+### Environment Configuration (Development & Production)
+
+- **Backend CORS Allowed Origins (`CORS_ALLOWED_ORIGINS` / `cors.allowed-origins`)**:
+  - Development Default: `http://localhost:5173,http://localhost:4173`
+  - Production Example: `CORS_ALLOWED_ORIGINS=https://your-frontend-domain.example`
+  - Multiple origins can be comma-separated: `http://localhost:5173,https://app.example.com`
+
+- **Frontend API Base URL (`VITE_API_BASE_URL`)**:
+  - Development Default: `http://localhost:8080`
+  - Production Example: `VITE_API_BASE_URL=https://api.yourlogisticsdomain.com`
+
+Copy `frontend/.env.example` to `frontend/.env.local` to customize frontend variables for local development.
+
 Example request:
 
 ```json

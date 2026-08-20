@@ -143,4 +143,7 @@ To master this project efficiently, read the documentation files in this exact s
 13. [17_RUNNING_LOCALLY.md](file:///d:/Study/SIH/LinkedIT/PROJECT_GUIDE/17_RUNNING_LOCALLY.md) — Quickstart execution guide.
 14. [20_CODE_CHANGE_GUIDE.md](file:///d:/Study/SIH/LinkedIT/PROJECT_GUIDE/20_CODE_CHANGE_GUIDE.md) — How to safely add new features.
 15. [21_INTERVIEW_PREPARATION.md](file:///d:/Study/SIH/LinkedIT/PROJECT_GUIDE/21_INTERVIEW_PREPARATION.md) — 40+ Questions and answers for technical rounds.
+16. [24_FRONTEND_DEEP_DIVE.md](file:///d:/Study/SIH/LinkedIT/PROJECT_GUIDE/24_FRONTEND_DEEP_DIVE.md) — Complete React + Vite frontend architecture, data tables, and Leaflet map integration.
+17. [25_UI_SPECIFICATION.md](file:///d:/Study/SIH/LinkedIT/PROJECT_GUIDE/25_UI_SPECIFICATION.md) — Complete UI sizing, dimensions, padding, colors, and layout metrics.
+
 

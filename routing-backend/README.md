@@ -57,6 +57,33 @@ Each successful route now includes frontend-ready geometry:
 
 GeoJSON and OSRM coordinates are always longitude first, then latitude. Vehicle-specific start and end locations are preserved; the global depot is not appended unless it is the route's actual end.
 
+## CORS Configuration
+
+Cross-Origin Resource Sharing (CORS) is configured for `/api/**` endpoints.
+
+Development Default:
+```properties
+cors.allowed-origins=http://localhost:5173,http://localhost:4173
+```
+
+Development Environment Variable Example:
+```powershell
+$env:CORS_ALLOWED_ORIGINS='http://localhost:5173'
+mvn -pl routing-backend spring-boot:run
+```
+
+Production Environment Variable Example:
+```bash
+export CORS_ALLOWED_ORIGINS="https://your-frontend-domain.example"
+```
+
+Multiple allowed origins can be specified as a comma-separated list:
+```bash
+export CORS_ALLOWED_ORIGINS="https://frontend.example.com,https://staging.example.com"
+```
+
+In production, `CORS_ALLOWED_ORIGINS` must be supplied through your cloud deployment platform's environment variables (e.g. AWS App Runner, Docker, Render, Kubernetes).
+
 ## Run
 
 From the repository root:

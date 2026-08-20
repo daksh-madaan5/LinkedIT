@@ -1,0 +1,7 @@
+.git
+.idea
+.vscode
+frontend
+PROJECT_GUIDE
+*.md
+**/target

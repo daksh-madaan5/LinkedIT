@@ -120,9 +120,10 @@ body {
 
 /* Draggable Split-Pane Resize Handles */
 .resize-handle-x {
-  width: 6px;
+  width: 4px;
   cursor: col-resize;
-  background-color: #e2e8f0;
+  background-color: #f1f5f9;
+  border-right: 1px solid #e2e8f0;
   transition: background-color 0.15s ease;
   z-index: 30;
   user-select: none;
@@ -136,28 +137,19 @@ body {
 
 .resize-handle-x:hover,
 .resize-handle-x.is-dragging {
-  background-color: #3b82f6;
+  background-color: #60a5fa;
 }
 
 .resize-grip-dots-x {
-  width: 14px;
-  height: 24px;
-  background-color: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  color: #64748b;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  pointer-events: none;
+  display: none;
 }
 
 .resize-handle-y {
-  height: 6px;
+  height: 5px;
   cursor: row-resize;
-  background-color: #e2e8f0;
+  background-color: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
   transition: background-color 0.15s ease;
   z-index: 30;
   user-select: none;
@@ -171,23 +163,17 @@ body {
 
 .resize-handle-y:hover,
 .resize-handle-y.is-dragging {
-  background-color: #3b82f6;
+  background-color: #60a5fa;
 }
 
 .resize-grip-dots-y {
-  height: 14px;
-  width: 24px;
-  background-color: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  color: #64748b;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  width: 32px;
+  height: 2px;
+  background-color: #cbd5e1;
+  border-radius: 1px;
   pointer-events: none;
 }
+
 
 /* Animations */
 @keyframes spin {

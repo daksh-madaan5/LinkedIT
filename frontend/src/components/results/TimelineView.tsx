@@ -16,7 +16,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 }) => {
   if (!response || !response.routes || response.routes.length === 0) {
     return (
-      <div className="p-8 text-center text-slate-400 text-xs italic">
+      <div className="pt-10 pb-6 text-center text-slate-400 text-xs italic">
         No timeline data available. Optimize routes first to inspect vehicle schedules.
       </div>
     );

@@ -79,16 +79,16 @@ export const ResultsTabs: React.FC<ResultsTabsProps> = ({
       className="bg-white border-t border-slate-200 flex flex-col shrink-0 overflow-hidden select-none"
     >
       {/* Dispatch Navigation Tabs Bar */}
-      <div className="h-11 bg-white border-b border-slate-200 px-4 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-6 h-full">
+      <div className="h-10 bg-white border-b border-slate-200 px-3.5 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2 h-full">
           {/* Orders Tab */}
           <button
             type="button"
             onClick={() => setActiveTab('orders')}
-            className={`h-full text-xs font-semibold flex items-center gap-1.5 border-b-2 transition-all cursor-pointer ${
+            className={`h-full px-3.5 text-[13px] flex items-center gap-1.5 border-b-2 transition-all cursor-pointer ${
               activeTab === 'orders'
                 ? 'text-blue-600 border-blue-600 font-bold'
-                : 'text-slate-600 hover:text-slate-900 border-transparent'
+                : 'text-slate-500 hover:text-slate-900 border-transparent font-medium'
             }`}
           >
             <LayoutList className="h-3.5 w-3.5 shrink-0" />
@@ -99,16 +99,16 @@ export const ResultsTabs: React.FC<ResultsTabsProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('routes')}
-            className={`h-full text-xs font-semibold flex items-center gap-1.5 border-b-2 transition-all cursor-pointer ${
+            className={`h-full px-3.5 text-[13px] flex items-center gap-1.5 border-b-2 transition-all cursor-pointer ${
               activeTab === 'routes'
                 ? 'text-blue-600 border-blue-600 font-bold'
-                : 'text-slate-600 hover:text-slate-900 border-transparent'
+                : 'text-slate-500 hover:text-slate-900 border-transparent font-medium'
             }`}
           >
             <Route className="h-3.5 w-3.5 shrink-0" />
             <span>Routes</span>
             {routesCount > 0 && (
-              <span className="text-[10px] font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.5 rounded-full">
+              <span className="text-[10px] font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.2 rounded-full">
                 {routesCount}
               </span>
             )}
@@ -118,10 +118,10 @@ export const ResultsTabs: React.FC<ResultsTabsProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('timeline')}
-            className={`h-full text-xs font-semibold flex items-center gap-1.5 border-b-2 transition-all cursor-pointer ${
+            className={`h-full px-3.5 text-[13px] flex items-center gap-1.5 border-b-2 transition-all cursor-pointer ${
               activeTab === 'timeline'
                 ? 'text-blue-600 border-blue-600 font-bold'
-                : 'text-slate-600 hover:text-slate-900 border-transparent'
+                : 'text-slate-500 hover:text-slate-900 border-transparent font-medium'
             }`}
           >
             <Clock className="h-3.5 w-3.5 shrink-0" />
@@ -132,15 +132,15 @@ export const ResultsTabs: React.FC<ResultsTabsProps> = ({
         {/* Right Side: Search & Filter Controls */}
         <div className="flex items-center gap-2">
           {selectedVehicleId && (
-            <div className="flex items-center gap-1.5 text-xs mr-2">
+            <div className="flex items-center gap-1.5 text-xs mr-1">
               <span className="text-slate-500">Filtered:</span>
-              <span className="font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 font-mono">
+              <span className="font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 font-mono text-[11px]">
                 {selectedVehicleId}
               </span>
               <button
                 type="button"
                 onClick={() => onSelectVehicle(null)}
-                className="text-xs text-slate-500 hover:text-slate-900 underline cursor-pointer ml-1"
+                className="text-xs text-slate-500 hover:text-slate-900 underline cursor-pointer ml-0.5"
               >
                 Clear
               </button>
@@ -153,19 +153,19 @@ export const ResultsTabs: React.FC<ResultsTabsProps> = ({
               <button
                 type="button"
                 onClick={() => setIsFilterPopoverOpen((prev) => !prev)}
-                className={`p-1.5 rounded transition-all cursor-pointer relative ${
+                className={`h-7.5 w-7.5 rounded border transition-all cursor-pointer flex items-center justify-center relative ${
                   isFilterActive
-                    ? 'text-blue-600 bg-blue-50 border border-blue-200 shadow-xs'
+                    ? 'text-blue-600 bg-blue-50 border-blue-300'
                     : isFilterPopoverOpen
-                    ? 'text-slate-800 bg-slate-100'
-                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                    ? 'text-slate-800 bg-slate-100 border-slate-300'
+                    : 'text-slate-500 hover:text-slate-700 bg-white hover:bg-slate-50 border-slate-200'
                 }`}
                 title="Filter orders"
                 aria-label="Filter orders"
               >
                 <Filter className="h-3.5 w-3.5" />
                 {isFilterActive && (
-                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-600 rounded-full ring-2 ring-white" />
+                  <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-blue-600 rounded-full" />
                 )}
               </button>
 
@@ -188,7 +188,7 @@ export const ResultsTabs: React.FC<ResultsTabsProps> = ({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search orders..."
-                className="w-48 pl-2.5 pr-7 py-1 text-xs bg-white border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1.5 focus:ring-blue-500/20 focus:border-blue-500 h-7.5 font-sans"
+                className="w-48 sm:w-52 pl-2.5 pr-7 text-xs bg-white border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500 h-7.5 font-sans"
               />
               <Search className="h-3.5 w-3.5 text-slate-400 absolute right-2 top-2 pointer-events-none" />
             </div>

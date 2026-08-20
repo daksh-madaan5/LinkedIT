@@ -113,7 +113,7 @@ export const JobSection: React.FC<JobSectionProps> = ({
   };
 
   return (
-    <div className="p-3 bg-white rounded-lg border border-slate-200 shadow-xs space-y-2.5">
+    <div className="p-2.5 bg-white rounded border border-slate-200 space-y-2">
       {/* Hidden File Input for CSV Upload */}
       <input
         ref={fileInputRef}
@@ -125,7 +125,7 @@ export const JobSection: React.FC<JobSectionProps> = ({
 
       {/* Header with Title and Actions */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-slate-900 font-bold text-xs uppercase tracking-wider">
+        <div className="flex items-center gap-1.5 text-slate-900 font-bold text-xs uppercase tracking-wider font-sans">
           <Package className="h-3.5 w-3.5 text-blue-600 shrink-0" />
           <span>Delivery Jobs</span>
           <span className="text-[11px] font-normal text-slate-500 font-mono">({jobs.length})</span>
@@ -135,7 +135,7 @@ export const JobSection: React.FC<JobSectionProps> = ({
           <button
             type="button"
             onClick={openAddModal}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-2 py-0.5 rounded transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-1.5 py-0.5 rounded transition-colors cursor-pointer"
             title="Add individual delivery job"
           >
             <Plus className="h-3.5 w-3.5" />
@@ -145,7 +145,7 @@ export const JobSection: React.FC<JobSectionProps> = ({
           <button
             type="button"
             onClick={handleTriggerFileInput}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 px-2 py-0.5 rounded border border-slate-200 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1 text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 transition-colors cursor-pointer"
             title="Import jobs from CSV file"
           >
             <Upload className="h-3 w-3 text-slate-500" />
@@ -156,7 +156,7 @@ export const JobSection: React.FC<JobSectionProps> = ({
 
       {/* CSV Template Download Bar */}
       <div className="flex items-center justify-between text-[11px] pt-0.5 border-t border-slate-100 text-slate-500">
-        <span>Bulk import delivery locations</span>
+        <span>Bulk CSV import</span>
         <button
           type="button"
           onClick={downloadCsvTemplate}
@@ -164,48 +164,48 @@ export const JobSection: React.FC<JobSectionProps> = ({
           title="Download sample CSV template format"
         >
           <Download className="h-2.5 w-2.5" />
-          <span>Download CSV Template</span>
+          <span>Download Template</span>
         </button>
       </div>
 
-      {/* Delivery Jobs List */}
+      {/* Delivery Jobs List with Aligned Columns */}
       {jobs.length === 0 ? (
         <p className="text-xs text-slate-400 italic py-2 text-center border border-dashed border-slate-200 rounded">
           No delivery jobs added yet. Add manually or import CSV.
         </p>
       ) : (
-        <div className="space-y-1.5 max-h-60 overflow-y-auto pr-0.5">
+        <div className="space-y-1 max-h-48 overflow-y-auto pr-0.5">
           {jobs.map((j, idx) => (
             <div
               key={`${j.id}-${idx}`}
-              className="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-md text-xs hover:bg-slate-50 transition-colors"
+              className="flex items-center justify-between p-1.5 bg-white border border-slate-200 rounded text-xs hover:bg-slate-50 transition-colors"
             >
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="font-mono font-bold text-slate-900 text-xs shrink-0 w-6">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <span className="font-mono font-bold text-slate-900 text-xs shrink-0 w-8">
                   {j.id}
                 </span>
                 <span className="text-slate-500 font-mono text-[11px] truncate">
                   {formatCoordinates(j.latitude, j.longitude)}
                 </span>
               </div>
-              <div className="flex items-center gap-3 text-slate-700 shrink-0">
-                <span className="font-mono font-bold text-xs w-6 text-right">{j.demand}</span>
+              <div className="flex items-center gap-2.5 text-slate-700 shrink-0">
+                <span className="font-mono font-semibold text-xs w-8 text-right text-slate-900">{j.demand}u</span>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => openEditModal(idx)}
-                    className="h-6 w-6 flex items-center justify-center text-slate-400 hover:text-slate-700 bg-white border border-slate-200 rounded hover:bg-slate-50 transition-colors shadow-xs cursor-pointer"
+                    className="h-5.5 w-5.5 flex items-center justify-center text-slate-400 hover:text-slate-700 bg-white border border-slate-200 rounded hover:bg-slate-50 transition-colors cursor-pointer"
                     title="Edit job"
                   >
-                    <Edit2 className="h-3 w-3" />
+                    <Edit2 className="h-2.5 w-2.5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => onRemoveJob(idx)}
-                    className="h-6 w-6 flex items-center justify-center text-slate-400 hover:text-red-600 bg-white border border-slate-200 rounded hover:bg-red-50 transition-colors shadow-xs cursor-pointer"
+                    className="h-5.5 w-5.5 flex items-center justify-center text-slate-400 hover:text-red-600 bg-white border border-slate-200 rounded hover:bg-red-50 transition-colors cursor-pointer"
                     title="Remove job"
                   >
-                    <Trash2 className="h-3 w-3" />
+                    <Trash2 className="h-2.5 w-2.5" />
                   </button>
                 </div>
               </div>
@@ -213,6 +213,7 @@ export const JobSection: React.FC<JobSectionProps> = ({
           ))}
         </div>
       )}
+
 
       {/* Lightweight Job Add/Edit Modal */}
       {isModalOpen && (

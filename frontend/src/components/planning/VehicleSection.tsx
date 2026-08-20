@@ -62,9 +62,9 @@ export const VehicleSection: React.FC<VehicleSectionProps> = ({
   };
 
   return (
-    <div className="p-3 bg-white rounded-lg border border-slate-200 shadow-xs space-y-2.5">
+    <div className="p-2.5 bg-white rounded border border-slate-200 space-y-2">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-slate-900 font-bold text-xs uppercase tracking-wider">
+        <div className="flex items-center gap-1.5 text-slate-900 font-bold text-xs uppercase tracking-wider font-sans">
           <Truck className="h-3.5 w-3.5 text-blue-600 shrink-0" />
           <span>Vehicle Fleet</span>
           <span className="text-[11px] font-normal text-slate-500 font-mono">({vehicles.length})</span>
@@ -72,7 +72,7 @@ export const VehicleSection: React.FC<VehicleSectionProps> = ({
         <button
           type="button"
           onClick={openAddModal}
-          className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-2 py-0.5 rounded transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-1.5 py-0.5 rounded transition-colors cursor-pointer"
         >
           <Plus className="h-3.5 w-3.5" />
           <span>Add vehicle</span>
@@ -84,46 +84,46 @@ export const VehicleSection: React.FC<VehicleSectionProps> = ({
           No vehicles configured
         </p>
       ) : (
-        <div className="space-y-1.5 max-h-48 overflow-y-auto pr-0.5">
+        <div className="space-y-1 max-h-44 overflow-y-auto pr-0.5">
           {vehicles.map((v, idx) => {
             const isSelected = selectedVehicleId === v.id;
             return (
               <div
                 key={`${v.id}-${idx}`}
                 onClick={() => onSelectVehicle?.(isSelected ? null : v.id)}
-                className={`flex items-center justify-between p-2 rounded-md text-xs transition-all cursor-pointer select-none ${
+                className={`flex items-center justify-between p-1.5 rounded text-xs transition-all cursor-pointer select-none ${
                   isSelected
-                    ? 'bg-blue-50 border border-blue-400 text-blue-950 font-medium shadow-xs'
+                    ? 'bg-blue-50/80 border border-blue-400 text-blue-950 font-medium'
                     : 'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50'
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <span
-                    className="w-2.5 h-2.5 rounded-full inline-block shrink-0 shadow-xs"
+                    className="w-2 h-2 rounded-full inline-block shrink-0"
                     style={{ backgroundColor: getVehicleColor(idx) }}
                   />
                   <span className="font-bold text-xs font-mono text-slate-900">{v.id}</span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <span className="text-xs text-slate-600 font-mono">
-                    Cap: <strong className="font-bold text-slate-900">{v.capacity}</strong>
+                    Cap: <strong className="font-semibold text-slate-900">{v.capacity}</strong>
                   </span>
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
                       onClick={(e) => openEditModal(idx, e)}
-                      className="h-6 w-6 flex items-center justify-center text-slate-400 hover:text-slate-700 bg-white border border-slate-200 rounded hover:bg-slate-50 transition-colors shadow-xs cursor-pointer"
+                      className="h-5.5 w-5.5 flex items-center justify-center text-slate-400 hover:text-slate-700 bg-white border border-slate-200 rounded hover:bg-slate-50 transition-colors cursor-pointer"
                       title="Edit vehicle"
                     >
-                      <Edit2 className="h-3 w-3" />
+                      <Edit2 className="h-2.5 w-2.5" />
                     </button>
                     <button
                       type="button"
                       onClick={(e) => handleRemove(idx, e)}
-                      className="h-6 w-6 flex items-center justify-center text-slate-400 hover:text-red-600 bg-white border border-slate-200 rounded hover:bg-red-50 transition-colors shadow-xs cursor-pointer"
+                      className="h-5.5 w-5.5 flex items-center justify-center text-slate-400 hover:text-red-600 bg-white border border-slate-200 rounded hover:bg-red-50 transition-colors cursor-pointer"
                       title="Remove vehicle"
                     >
-                      <Trash2 className="h-3 w-3" />
+                      <Trash2 className="h-2.5 w-2.5" />
                     </button>
                   </div>
                 </div>
@@ -132,6 +132,7 @@ export const VehicleSection: React.FC<VehicleSectionProps> = ({
           })}
         </div>
       )}
+
 
       {/* Lightweight Vehicle Add/Edit Modal */}
       {isModalOpen && (
