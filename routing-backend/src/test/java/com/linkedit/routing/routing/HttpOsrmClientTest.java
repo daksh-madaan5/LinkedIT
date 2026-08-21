@@ -15,7 +15,7 @@ class HttpOsrmClientTest {
     void constructsCoordinatesAsLongitudeThenLatitude() {
         OsrmProperties properties = new OsrmProperties();
         properties.setBaseUrl("http://localhost:5000/");
-        HttpOsrmClient client = new HttpOsrmClient(properties, new ObjectMapper(), null);
+        HttpOsrmClient client = new HttpOsrmClient(properties, new ObjectMapper());
         RoutingLocations locations = new RoutingLocations(
             List.of(
                 new RoutingLocation("DEPOT-1", 20.2961, 85.8245),
@@ -36,7 +36,7 @@ class HttpOsrmClientTest {
     void constructsFinalRouteCoordinatesInExactLongitudeLatitudeOrder() {
         OsrmProperties properties = new OsrmProperties();
         properties.setBaseUrl("http://localhost:5000/");
-        HttpOsrmClient client = new HttpOsrmClient(properties, new ObjectMapper(), null);
+        HttpOsrmClient client = new HttpOsrmClient(properties, new ObjectMapper());
         List<RoutingLocation> route = List.of(
             new RoutingLocation("DEPOT", 20.2961, 85.8245),
             new RoutingLocation("D1", 20.305, 85.817),
@@ -55,7 +55,7 @@ class HttpOsrmClientTest {
 
     @Test
     void parsesGeoJsonLineStringFromOsrmRouteResponse() {
-        HttpOsrmClient client = new HttpOsrmClient(new OsrmProperties(), new ObjectMapper(), null);
+        HttpOsrmClient client = new HttpOsrmClient(new OsrmProperties(), new ObjectMapper());
         String body = """
             {
               "code": "Ok",

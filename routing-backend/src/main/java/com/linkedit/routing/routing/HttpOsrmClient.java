@@ -2,6 +2,9 @@ package com.linkedit.routing.routing;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.linkedit.routing.cache.CacheKeyGenerator;
+import com.linkedit.routing.cache.InMemoryCache;
+import com.linkedit.routing.cache.RoutingCacheProperties;
 import com.linkedit.routing.dto.response.RouteGeometry;
 import com.linkedit.routing.exception.RoutingProviderException;
 import java.io.IOException;
@@ -10,31 +13,62 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
-
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class HttpOsrmClient implements OsrmClient {
 
+    private static final Logger log = LoggerFactory.getLogger(HttpOsrmClient.class);
+
     private final OsrmProperties properties;
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
+    private final RoutingCacheProperties cacheProperties;
+
+    private final InMemoryCache<String, RoutingMatrix> matrixCache = new InMemoryCache<>();
+    private final InMemoryCache<String, RouteGeometry> geometryCache = new InMemoryCache<>();
 
     @Autowired
+    public HttpOsrmClient(OsrmProperties properties, ObjectMapper objectMapper, RoutingCacheProperties cacheProperties) {
+        this(properties, objectMapper, HttpClient.newBuilder()
+                .connectTimeout(properties.getConnectTimeout())
+                .build(), cacheProperties);
+    }
+
     public HttpOsrmClient(OsrmProperties properties, ObjectMapper objectMapper) {
         this(properties, objectMapper, HttpClient.newBuilder()
                 .connectTimeout(properties.getConnectTimeout())
-                .build());
+                .build(), new RoutingCacheProperties());
     }
 
     HttpOsrmClient(
             OsrmProperties properties,
             ObjectMapper objectMapper,
             HttpClient httpClient) {
+        this(properties, objectMapper, httpClient, new RoutingCacheProperties());
+    }
+
+    HttpOsrmClient(
+            OsrmProperties properties,
+            ObjectMapper objectMapper,
+            HttpClient httpClient,
+            RoutingCacheProperties cacheProperties) {
         this.properties = properties;
         this.objectMapper = objectMapper;
         this.httpClient = httpClient;
+        this.cacheProperties = cacheProperties != null ? cacheProperties : new RoutingCacheProperties();
+    }
+
+    public InMemoryCache<String, RoutingMatrix> getMatrixCache() {
+        return matrixCache;
+    }
+
+    public InMemoryCache<String, RouteGeometry> getGeometryCache() {
+        return geometryCache;
     }
 
     @Override
@@ -48,13 +82,29 @@ public class HttpOsrmClient implements OsrmClient {
             );
         }
 
+        boolean cachingEnabled = cacheProperties.getCache().isEnabled();
+        String cacheKey = cachingEnabled ? CacheKeyGenerator.forMatrix(locations.uniqueLocations(), properties.getBaseUrl()) : null;
+        if (cachingEnabled) {
+            Optional<RoutingMatrix> cached = matrixCache.get(cacheKey);
+            if (cached.isPresent()) {
+                log.info("OSRM matrix cache HIT");
+                return cached.get();
+            }
+            log.info("OSRM matrix cache MISS");
+        }
+
         HttpRequest request = HttpRequest.newBuilder(buildTableUri(locations.uniqueLocations()))
             .timeout(properties.getRequestTimeout())
             .header("Accept", "application/json")
             .GET()
             .build();
         HttpResponse<String> response = sendWithRetry(request, "table");
-        return toMatrix(response.body(), locations, size);
+        RoutingMatrix matrix = toMatrix(response.body(), locations, size);
+
+        if (cachingEnabled) {
+            matrixCache.put(cacheKey, matrix, cacheProperties.getCache().getTtl(), cacheProperties.getCache().getMaxEntries());
+        }
+        return matrix;
     }
 
     @Override
@@ -62,13 +112,30 @@ public class HttpOsrmClient implements OsrmClient {
         if (orderedLocations == null || orderedLocations.size() < 2) {
             throw new RoutingProviderException("At least two ordered locations are required for route geometry");
         }
+
+        boolean cachingEnabled = cacheProperties.getCache().isEnabled();
+        String cacheKey = cachingEnabled ? CacheKeyGenerator.forGeometry(orderedLocations, properties.getBaseUrl()) : null;
+        if (cachingEnabled) {
+            Optional<RouteGeometry> cached = geometryCache.get(cacheKey);
+            if (cached.isPresent()) {
+                log.info("Geometry cache HIT");
+                return cached.get();
+            }
+            log.info("Geometry cache MISS");
+        }
+
         HttpRequest request = HttpRequest.newBuilder(buildRouteUri(orderedLocations))
             .timeout(properties.getRequestTimeout())
             .header("Accept", "application/json")
             .GET()
             .build();
         HttpResponse<String> response = sendWithRetry(request, "route");
-        return toGeometry(response.body());
+        RouteGeometry geometry = toGeometry(response.body());
+
+        if (cachingEnabled) {
+            geometryCache.put(cacheKey, geometry, cacheProperties.getCache().getTtl(), cacheProperties.getCache().getMaxEntries());
+        }
+        return geometry;
     }
 
     private HttpResponse<String> sendWithRetry(HttpRequest request, String operationName) {
